@@ -1,7 +1,7 @@
 // ─── SUPABASE CONFIG ───────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://thhgntgmewwxuxbogwjh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaGdudGdtZXd3eHV4Ym9nd2poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTUwNzEsImV4cCI6MjA4OTEzMTA3MX0.kp3Tsf4He4hpj2MpOTaLI22VjZay9cTIubgJD4GDekc';
-const ANTHROPIC_KEY = 'YOUR_ANTHROPIC_API_KEY'; // Replace after getting key
+const ANTHROPIC_KEY = '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'; // Replace after getting key
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
