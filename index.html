@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Penny Lane">
+<meta name="theme-color" content="#CF5527">
+<link rel="manifest" href="manifest.json">
+<title>Penny Lane</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="screen active">
+  <div class="login-wrap">
+    <div class="login-logo">Penny Lane</div>
+    <div class="login-tagline">your home, your rules</div>
+    <div id="login-step1">
+      <div class="form-label">Your email address</div>
+      <input type="email" id="login-email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      <button class="btn-primary" onclick="sendOTP()">Send code</button>
+    </div>
+    <div id="login-step2" style="display:none;">
+      <div class="form-label">Enter the 6-digit code sent to your email</div>
+      <input type="number" id="login-otp" class="form-input" placeholder="000000">
+      <button class="btn-primary" onclick="verifyOTP()">Verify</button>
+      <div class="login-back" onclick="backToEmail()">Back</div>
+    </div>
+    <div id="login-step3" style="display:none;">
+      <div class="form-label">Who are you?</div>
+      <div class="name-options">
+        <div class="name-opt" id="opt-bhakthi" onclick="selectName('Bhakthi',this)">Bhakthi</div>
+        <div class="name-opt" id="opt-prithvi" onclick="selectName('Prithvi',this)">Prithvi</div>
+      </div>
+      <button class="btn-primary" onclick="saveName()">Let's go!</button>
+    </div>
+    <div id="login-msg" class="login-msg"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-screen" class="screen">
+  <div class="phone">
+    <div class="status-bar">
+      <span id="status-time">9:41</span>
+      <span>WiFi</span>
+    </div>
+    <div class="header" id="app-header">
+      <div class="header-row">
+        <div>
+          <div class="app-name">Penny Lane</div>
+          <div class="app-date" id="app-date"></div>
+        </div>
+        <div class="logout-btn" onclick="logout()">sign out</div>
+      </div>
+      <div class="score-row">
+        <div class="score-card" id="b-card">
+          <div class="score-name">Bhakthi</div>
+          <div class="score-pts" id="b-pts">0</div>
+          <div class="score-sub">points</div>
+        </div>
+        <div class="score-card" id="p-card">
+          <div class="score-name">Prithvi</div>
+          <div class="score-pts" id="p-pts">0</div>
+          <div class="score-sub">points</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="nav-btn active" onclick="showTab('dashboard',this)"><span class="nav-icon">⊞</span>Home</button>
+      <button class="nav-btn" onclick="showTab('chores',this)"><span class="nav-icon">✓</span>Chores</button>
+      <button class="nav-btn" onclick="showTab('rituals',this)"><span class="nav-icon">★</span>Rituals</button>
+      <button class="nav-btn" onclick="showTab('lists',this)"><span class="nav-icon">◎</span>Lists</button>
+      <button class="nav-btn" onclick="showTab('finances',this)"><span class="nav-icon">◈</span>Finance</button>
+      <button class="nav-btn" onclick="showTab('agent',this)"><span class="nav-icon">✦</span>AI</button>
+    </div>
+
+    <div class="content">
+
+      <div id="tab-dashboard" class="tab-content active">
+        <div class="section-label">Leaderboard</div>
+        <div id="dash-leader"></div>
+        <div class="section-label">Today's chores</div>
+        <div id="dash-chores"><div class="empty-state">Loading...</div></div>
+        <div class="section-label">Today's rituals</div>
+        <div id="dash-rituals"><div class="empty-state">Loading...</div></div>
+        <div id="dash-claimable-section" style="display:none;">
+          <div class="section-label" style="color:var(--sky);">Open to claim</div>
+          <div id="dash-claimable"></div>
+        </div>
+      </div>
+
+      <div id="tab-chores" class="tab-content">
+        <div class="section-label">Bhakthi's chores</div>
+        <div id="b-chores"></div>
+        <div class="section-label">Prithvi's chores</div>
+        <div id="p-chores"></div>
+        <button class="add-btn" onclick="openModal('chore')">+ Add chore</button>
+        <div class="section-label" style="margin-top:24px;">Free pass</div>
+        <div class="fp-card">
+          <div class="fp-title">Skip a chore</div>
+          <div class="fp-desc">Spend 20 pts to skip any assigned chore today</div>
+          <div class="fp-bottom"><div class="fp-cost">20 pts</div><button class="fp-btn" onclick="useFreePass()">Use pass</button></div>
+        </div>
+      </div>
+
+      <div id="tab-rituals" class="tab-content">
+        <div class="section-label">Shared rituals</div>
+        <div id="rituals-list"></div>
+        <button class="add-btn" onclick="openModal('ritual')">+ Add ritual</button>
+      </div>
+
+      <div id="tab-lists" class="tab-content">
+        <div class="section-label">Grocery list</div>
+        <div id="grocery-list"></div>
+        <button class="add-btn" onclick="openModal('grocery')">+ Add grocery item</button>
+        <div class="section-label">Wishlist</div>
+        <div id="wishlist-list"></div>
+        <button class="add-btn" onclick="openModal('wish')">+ Add to wishlist</button>
+      </div>
+
+      <div id="tab-finances" class="tab-content">
+        <div class="period-toggle">
+          <button class="period-btn active" onclick="setPeriod('daily',this)">Daily</button>
+          <button class="period-btn" onclick="setPeriod('monthly',this)">Monthly</button>
+        </div>
+        <div class="fin-grid">
+          <div class="fin-card a"><div class="fin-label">Total spent</div><div class="fin-amount" id="fin-total">₹0</div><div class="fin-sub" id="fin-period-label">Today</div></div>
+          <div class="fin-card b"><div class="fin-label">Top category</div><div class="fin-amount" id="fin-top" style="font-size:14px;margin-top:4px;">—</div><div class="fin-sub">biggest spend</div></div>
+        </div>
+        <div class="section-label">Breakdown</div>
+        <div id="cat-list"></div>
+        <button class="add-btn" onclick="openModal('expense')" style="margin-top:12px;">+ Add expense</button>
+      </div>
+
+      <div id="tab-agent" class="tab-content">
+        <div class="agent-wrap">
+          <div class="agent-header">✦ Penny Lane AI</div>
+          <div class="agent-sub">I can change ANYTHING — colours, layout, features, add items, redesign sections. Just ask!</div>
+          <div class="agent-examples">
+            <div class="agent-ex" onclick="fillPrompt('Change the colour theme to deep ocean blue and teal')">Change colours</div>
+            <div class="agent-ex" onclick="fillPrompt('Add Clean bathroom as a weekly chore for Bhakthi worth 6 pts')">Add chore</div>
+            <div class="agent-ex" onclick="fillPrompt('Add evening walk as a daily ritual worth 5 pts each')">Add ritual</div>
+            <div class="agent-ex" onclick="fillPrompt('Add milk bread and eggs to the grocery list')">Add groceries</div>
+            <div class="agent-ex" onclick="fillPrompt('Add Dyson vacuum to wishlist extremely necessary price 45000')">Add to wishlist</div>
+            <div class="agent-ex" onclick="fillPrompt('Make the app feel more playful with brighter colours')">Redesign</div>
+          </div>
+          <div class="agent-msgs" id="agent-msgs">
+            <div class="msg ai">Hey Bhakthi & Prithvi! I'm your Penny Lane AI. I can change anything about this app or add any data. What would you like?</div>
+          </div>
+          <div id="agent-typing" class="agent-typing" style="display:none;">Thinking...</div>
+          <div class="agent-input-row">
+            <input class="agent-input" id="agent-input" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendAgent()">
+            <button class="agent-send" onclick="sendAgent()">Send</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-bg" onclick="closeModalBg(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add item</div>
+    <div id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
